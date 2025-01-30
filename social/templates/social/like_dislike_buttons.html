@@ -1,0 +1,15 @@
+<div class="d-flex justify-content-between align-items-center">
+  
+  <form action="{% url 'like-post' post.pk %}" method="POST" class="mr-2" id="like-form-{{ post.pk }}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-sm btn-primary {% if post.user_likes %} disabled {% endif %}">Like</button>
+  </form>
+  <span id="like-count-{{ post.pk }}">{{ post.like_count }} Likes</span>
+
+ 
+  <form action="{% url 'dislike-post' post.pk %}" method="POST" class="ml-2" id="dislike-form-{{ post.pk }}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-sm btn-danger {% if post.user_dislikes %} disabled {% endif %}">Dislike</button>
+  </form>
+  <span id="dislike-count-{{ post.pk }}">{{ post.dislike_count }} Dislikes</span>
+</div>

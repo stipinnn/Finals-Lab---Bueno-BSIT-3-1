@@ -1,0 +1,71 @@
+{% extends 'landing/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+  
+    <div class="row justify-content-center mt-4">
+      <div class="col-md-12 text-center">
+        <h2 class="fw-bold">Feed</h2>
+      </div>
+    </div> 
+
+    <div class="row justify-content-center mt-3">
+      <div class="col-md-5 col-sm-12 border-bottom">
+        <h5> Add a Post! </h5>
+      </div>
+    </div>
+
+    <div class="row justify-content-center mt-3 mb-5">
+      <div class="col-md-5 col-sm-12 border-bottom">
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <div class="d-grid gap-2">
+            <button class="btn btn-success mt-3">Submit!</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {% for post in post_list %}
+    <div class="row justify-content-center mt-3">
+      <div class="col-md-5 col-sm-12 border-bottom position-relative" id="post-{{ post.pk }}">
+        
+        <div class="d-flex align-items-center mb-2">
+          {% if post.author.profile.picture %}
+            <img src="{{ post.author.profile.picture.url }}" alt="{{ post.author.username }}'s Profile Picture" class="rounded-circle" style="width: 40px; height: 40px; margin-right: 10px;">
+          {% else %}
+            <img src="{% static 'uploads/profiles_pictures/defaultt.png' %}" alt="Default Profile Picture" class="rounded-circle" style="width: 40px; height: 40px; margin-right: 10px;">
+          {% endif %}
+          
+          <p class="mb-0">
+            <strong>{{ post.author }}</strong>
+            <br>
+            <small class="text-muted">{{ post.created_on|date:"M d, Y H:i" }}</small>
+          </p>
+        </div>
+
+        {% if post.image %}
+          <img src="{{ post.image.url }}" class="img-fluid mb-3" alt="Post Image">
+        {% endif %}
+        
+        <p>{{ post.body }}</p> 
+
+        
+        {% include 'social/like_dislike_buttons.html' %}
+
+        <a href="{% url 'post-detail' post.pk %}" class="stretched-link"></a>
+      </div>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+  textarea {
+    resize: none;
+  }
+</style>
+
+{% endblock content %}

@@ -1,0 +1,80 @@
+{% extends 'landing/base.html' %}
+{% load static %}  <!-- Load static files -->
+
+{% block content %}
+<div class="container">
+  <div class="row mt-5">
+    <div class="col-md-3 col-sm-6">
+      <a href="{% url 'post-list' %}" class="btn btn-light">Back to Feed</a>
+    </div>
+  </div>
+
+  
+  <div class="row justify-content-center mt-5">
+    <div class="card shadow-sm col-md-8 col-sm-12 border-bottom px-5 pt-3 text-center">
+      {% if profile.picture %}
+        <img src="{{ profile.picture.url }}" class="rounded-circle" width="100" height="100" />
+      {% else %}
+        <img src="{% static 'default_profile_picture.png' %}" class="rounded-circle" width="100" height="100" />
+      {% endif %}
+
+      <div class="profile-details py-4">
+        <h3>{{ profile.name }}
+          {% if request.user == user %}
+          <a href="{% url 'profile-edit' profile.pk %}" style="color: #333">
+            <i class="far fa-edit"></i>
+          </a>
+          {% endif %}
+        </h3>
+
+        {% if profile.location %}
+          <p><strong>Location:</strong> {{ profile.location }}</p>
+        {% endif %}
+        {% if profile.birth_date %}
+          <p><strong>Birth Date:</strong> {{ profile.birth_date }}</p>
+        {% endif %}
+        {% if profile.bio %}
+          <p>{{ profile.bio }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  
+  {% for post in posts %}
+  <div class="row justify-content-center mt-5">
+    <div class="card col-md-8 col-sm-12 shadow-sm p-4 mb-3">
+      <div class="post-header d-flex justify-content-between">
+        <strong>{{ post.author }}</strong> 
+        <span class="text-muted">{{ post.created_on|date:"F j, Y, g:i a" }}</span>
+      </div>
+
+      
+      {% if post.image %}
+        <img src="{{ post.image.url }}" class="img-fluid mt-3 mb-3 rounded" alt="Post Image">
+      {% endif %}
+
+      <p class="mt-3">{{ post.body }}</p>
+      <a href="{% url 'post-detail' post.pk %}" class="btn btn-primary btn-sm">Read Comment</a>
+    </div>
+  </div>
+  {% endfor %}
+
+  
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+      {% if posts.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ posts.previous_page_number }}">Previous</a></li>
+      {% endif %}
+
+      <li class="page-item active"><span class="page-link">{{ posts.number }}</span></li>
+
+      {% if posts.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ posts.next_page_number }}">Next</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ posts.paginator.num_pages }}">Last</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+{% endblock content %}

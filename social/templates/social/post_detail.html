@@ -1,0 +1,78 @@
+{% extends 'landing/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+  <div class="row mt-5">
+    <div class="col-md-5 col-sm-6">
+      <a href="{% url 'post-list' %}" class="btn btn-light">Back To Feed</a>
+    </div>
+  </div>
+
+  <div class="row justify-content-center mt-3">
+    <div class="col-md-5 col-sm-12 border-bottom">
+      <p>
+        <strong>{{ post.author }}</strong> {{ post.created_on|date:"F j, Y, g:i a" }}
+        {% if request.user == post.author %}
+          <a href="{% url 'post-edit' pk=post.pk %}" class="btn btn-warning btn-sm text-white">
+            <i class="far fa-edit"></i> Edit
+          </a>
+          <a href="{% url 'post-delete' post.pk %}" class="btn btn-danger btn-sm text-white">
+            <i class="fas fa-trash"></i> Delete
+          </a>
+        {% endif %}
+      </p>
+
+      {% if post.image %}
+        <img src="{{ post.image.url }}" class="img-fluid rounded mb-3" alt="Post Image">
+      {% endif %}
+
+      <p>{{ post.body }}</p>
+
+      <!-- Like and Dislike Buttons with Count -->
+      <div class="d-flex">
+        <form method="POST" action="{% url 'like-post' pk=post.pk %}" class="me-3">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-primary">Like</button>
+        </form>
+        <span>{{ like_count }} Likes</span>
+
+        <form method="POST" action="{% url 'dislike-post' pk=post.pk %}" class="ms-3">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-danger">Dislike</button>
+        </form>
+        <span>{{ dislike_count }} Dislikes</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="row justify-content-center mt-3 mb-5">
+    <div class="col-md-5 col-sm-12">
+      <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="d-grid gap-2">
+          <button class="btn btn-success mt-3">Submit!</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {% for comment in comments %}
+  <div class="row justify-content-center mt-3 mb-5">
+    <div class="col-md-5 col-sm-12 border-bottom">
+      <p>
+        <strong>{{ comment.author }}</strong> {{ comment.created_on|date:"F j, Y, g:i a" }}
+        
+        {% if request.user == comment.author %}
+          <a href="{% url 'comment-delete' post.pk comment.pk %}" class="btn btn-danger btn-sm text-white">
+            <i class="fas fa-trash"></i>
+          </a>
+        {% endif %}
+      </p>
+      <p>{{ comment.comment }}</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock content %}
